@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>task3</title>
+    <style>
+        .input {
+            width: 155px;
+        }
+
+        .button {
+            border: none;
+            cursor: pointer;
+            margin: 5px 10px;
+            padding: 10px 15px;
+            font-size: 12px;
+            color: white;
+            background: rgb(85, 159, 255);
+        }
+
+        .button:active {
+            background: rgb(8, 43, 88);
+            transition: background 0s;
+        }
+
+        .card-image {
+            margin: 20px;
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <input class="input" type="number" min="1" max="10" placeholder="Введите число от 0 до 10">
+        <button class="button">Жмяк</button>
+    </div>
+    <div class="photoContainer"></div>
+    <script>
+        const inputNode = document.querySelector('.input');
+        const btnNode = document.querySelector('.button');
+        const photoContainerNode = document.querySelector('.photoContainer');
+
+        function useRequest(url, callback) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+
+            xhr.onload = function () {
+                if (xhr.status != 200) {
+                    console.log('Статус ответа: ', xhr.status);
+                } else {
+                    const result = JSON.parse(xhr.response);
+                    if (callback) {
+                        callback(result);
+                    }
+                }
+            };
+
+            xhr.onerror = function () {
+                console.log('Ошибка! Статус ответа: ', xhr.status);
+            };
+
+            xhr.send();
+        };
+
+        function displayResult(apiData) {
+            let cards = '';
+            apiData.forEach(item => {
+                const cardBlock = `
+            <div class="photoContainer">
+              <img src="${item.download_url}" class="card-image">
+              <p>${item.author}</p>
+            </div>`;
+                cards += cardBlock;
+            });
+
+            photoContainerNode.innerHTML = cards;
+        }
+
+        btnNode.addEventListener('click', () => {
+            if (isNaN(inputNode.value) || inputNode.value != Math.floor(inputNode.value) || inputNode.value < 1 || inputNode.value > 10) {
+                photoContainerNode.innerHTML = " введите целое число от 1 до 10 "
+            } else {
+                const url = `https://picsum.photos/v2/list/?limit=${inputNode.value}`;
+                useRequest(url, displayResult);
+            }
+        })
+    </script>
+</body>
+
+</html>
