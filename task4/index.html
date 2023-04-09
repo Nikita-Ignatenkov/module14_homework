@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>task4</title>
+    <style>
+        .input__Wight {
+            width: 200px;
+        }
+
+        .input__Height {
+            width: 200px;
+        }
+
+        .button {
+            border: none;
+            cursor: pointer;
+            margin: 5px 10px;
+            padding: 10px 15px;
+            font-size: 12px;
+            color: white;
+            background: rgb(85, 159, 255);
+        }
+
+        .button:active {
+            background: rgb(8, 43, 88);
+            transition: background 0s;
+        }
+
+        .card-image {
+            margin: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <input class="input__Wight" type="number" min="100" max="300" placeholder="Введите число от 100 до 300">
+        <input class="input__Height" type="number" min="100" max="300" placeholder="Введите число от 100 до 300">
+        <button class="button">Жмяк</button>
+    </div>
+    <div class="photoContainer"></div>
+    <script>
+        const inputWightNode = document.querySelector('.input__Wight');
+        const inputHeightNode = document.querySelector('.input__Height');
+        const btnNode = document.querySelector('.button');
+        const photoContainerNode = document.querySelector('.photoContainer');
+        //
+        const useRequest = (url) => {
+            return fetch(url)
+                .then(response => response)
+                .then((data) => {
+                    const cardBlock = `
+                  <div class="card">
+                      <img class="card-image" src="${data.url}">
+                  </div>
+                  `
+                    photoContainerNode.innerHTML = cardBlock
+                })
+                .catch(() => {
+                    console.log('error')
+                })
+        }
+        //
+        btnNode.addEventListener('click', async () => {
+            if (isNaN(inputWightNode.value) || inputWightNode.value < 100 || inputWightNode.value > 300 ||
+                isNaN(inputHeightNode.value) || inputHeightNode.value < 100 || inputHeightNode.value > 300) {
+                photoContainerNode.innerHTML = "Только числа от 100 до 300"
+            } else {
+                await useRequest(`https://picsum.photos/${inputWightNode.value}/${inputHeightNode.value}`)
+            }
+        });
+    </script>
+</body>
+
+</html>

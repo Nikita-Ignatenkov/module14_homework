@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>task5</title>
+    <style>
+        .input__Number {
+            width: 200px;
+        }
+
+        .input__Limit {
+            width: 200px;
+        }
+
+        .button {
+            border: none;
+            cursor: pointer;
+            margin: 5px 10px;
+            padding: 10px 15px;
+            font-size: 12px;
+            color: white;
+            background: rgb(85, 159, 255);
+        }
+
+        .button:active {
+            background: rgb(8, 43, 88);
+            transition: background 0s;
+        }
+
+        .photo {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            width: 200px;
+            margin: 20px;
+        }
+
+        .card-image {
+            margin: 20px;
+            display: block;
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <input class=" input__Number" type="number" min="1" max="10" placeholder="номер страницы от 1 до 10">
+        <input class="input__Limit" type="number" min="1" max="10" placeholder="лимит от 1 до 10">
+        <button class="button">запрос</button>
+    </div>
+    <div class="photo"></div>
+    <script>
+
+const inputNumberNode = document.querySelector('.input__Number');
+const inputLimitNode = document.querySelector('.input__Limit');
+const btnNode = document.querySelector('.button');
+const photoNode = document.querySelector('.photo');
+
+const useRequest = async (url) => {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    const imagesData = data.map(item => ({
+      imageSrc: item.download_url,
+      author: item.author
+    }));
+    localStorage.setItem("images", JSON.stringify(imagesData));
+    showPhoto();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const showPhoto = () => {
+  const data = JSON.parse(localStorage.getItem("images"));
+  const cards = data.map(item => `
+    <div class="card">
+      <img class="card-image" src="${item.imageSrc}">
+      <p>${item.author}</p>
+    </div>
+  `).join('');
+  photoNode.innerHTML = cards;
+};
+
+const isValidNumber = (value, min, max) => {
+  const number = parseFloat(value);
+  return !isNaN(number) && number >= min && number <= max;
+};
+
+btnNode.addEventListener('click', () => {
+  if (!isValidNumber(inputNumberNode.value, 1, 10) || !isValidNumber(inputLimitNode.value, 1, 10)) {
+    if (!isValidNumber(inputNumberNode.value, 1, 10) && !isValidNumber(inputLimitNode.value, 1, 10)) {
+      photoNode.innerHTML = 'Номер страницы и лимит вне диапазона от 1 до 10';
+    } else if (!isValidNumber(inputNumberNode.value, 1, 10)) {
+      photoNode.innerHTML = 'Номер страницы вне диапазона от 1 до 10';
+    } else {
+      photoNode.innerHTML = 'Лимит вне диапазона от 1 до 10';
+    }
+  } else {
+    useRequest(`https://picsum.photos/v2/list?page=${inputNumberNode.value}&limit=${inputLimitNode.value}`);
+  }
+});
+    </script>
+</body>
+
+</html>
